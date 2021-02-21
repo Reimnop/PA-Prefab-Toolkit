@@ -16,7 +16,6 @@ If you want to implement a feature, feel free to open a Pull request.
 
 ## Features
 - Creating and modifying prefabs
-- Has types for prefabs
 
 ## Future plans
 - Randomization of events
