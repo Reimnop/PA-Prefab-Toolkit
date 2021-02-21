@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PAPrefabParser", "PAPrefabParser\PAPrefabParser.csproj", "{6C84569F-6E18-44BD-97FD-B32B64147324}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PAPrefabToolkit", "PAPrefabParser\PAPrefabToolkit.csproj", "{6C84569F-6E18-44BD-97FD-B32B64147324}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{C958C143-571E-41A6-8DE7-862AA0412FF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo", "Demo\Demo.csproj", "{C958C143-571E-41A6-8DE7-862AA0412FF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

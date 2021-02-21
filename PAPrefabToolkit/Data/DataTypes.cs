@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace PAPrefabParser.Data
+namespace PAPrefabToolkit.Data
 {
     /// <summary>
     /// The Prefab class. Contains all properties of a prefab.

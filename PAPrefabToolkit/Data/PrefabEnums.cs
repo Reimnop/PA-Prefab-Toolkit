@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PAPrefabParser.Data
+namespace PAPrefabToolkit.Data
 {
     /// <summary>
     /// Prefab Type enum. Contains all possible prefab types.
