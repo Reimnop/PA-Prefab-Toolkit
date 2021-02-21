@@ -16,7 +16,28 @@ namespace PAPrefabToolkit.Data
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            Prefab prefab = new Prefab();
+
+            JToken token = JToken.ReadFrom(reader);
+            if (token.Type == JTokenType.Object)
+            {
+                var obj = (JObject)token;
+                //read prefab metadata
+                prefab.Name = obj.Value<string>("name");
+                prefab.Type = (PrefabType)obj.Value<int>("type");
+                prefab.Offset = obj.Value<float>("offset");
+
+                //read prefab objects
+                JArray arr = obj.Value<JArray>("objects");
+                PrefabObject[] objects = new PrefabObject[arr.Count];
+                for (int i = 0; i < arr.Count; i++)
+                {
+                    objects[i] = serializer.Deserialize<PrefabObject>(arr[i].CreateReader());
+                }
+                prefab.Objects = objects.ToList();
+            }
+
+            return prefab;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -56,7 +77,52 @@ namespace PAPrefabToolkit.Data
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            PrefabObject prefabObject = new PrefabObject();
+
+            JToken token = JToken.ReadFrom(reader);
+            if (token.Type == JTokenType.Object)
+            {
+                var obj = (JObject)token;
+                prefabObject.Id = obj.Value<string>("id");
+
+                string ptStr = obj.Value<string>("pt");
+                if (!string.IsNullOrEmpty(ptStr))
+                {
+                    prefabObject.ParentType.PositionParenting = ptStr[0] != '0';
+                    prefabObject.ParentType.ScaleParenting = ptStr[1] != '0';
+                    prefabObject.ParentType.RotationParenting = ptStr[2] != '0';
+                }
+
+                JArray arr = obj.Value<JArray>("po");
+                if (arr != null)
+                    for (int i = 0; i < 3; i++)
+                        prefabObject.ParentOffset[i] = arr[i].Value<float>();
+
+                prefabObject.ParentId = obj.Value<string>("p");
+                prefabObject.Depth = obj.Value<int>("d");
+                prefabObject.ObjectType = (PrefabObjectType)obj.Value<int>("ot");
+                prefabObject.StartTime = obj.Value<float>("st");
+                prefabObject.Name = obj.Value<string>("name");
+                prefabObject.Shape = (PrefabObjectShape)obj.Value<int>("shape");
+                prefabObject.AutoKillType = (PrefabObjectAutoKillType)obj.Value<int>("akt");
+                prefabObject.AutoKillOffset = obj.Value<float>("ako");
+                prefabObject.ShapeOption = obj.Value<int>("so");
+
+                JObject origin = obj.Value<JObject>("o");
+                if (origin != null)
+                {
+                    prefabObject.Origin.X = origin.Value<float>("x");
+                    prefabObject.Origin.Y = origin.Value<float>("y");
+                }
+
+                JObject editor = obj.Value<JObject>("ed");
+                if (editor != null)
+                    prefabObject.Editor = serializer.Deserialize<PrefabObject.EditorData>(editor.CreateReader());
+
+                JObject events = obj.Value<JObject>("events");
+                prefabObject.ObjectEvents = serializer.Deserialize<PrefabObject.Events>(events.CreateReader());
+            }
+            return prefabObject;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -160,7 +226,19 @@ namespace PAPrefabToolkit.Data
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            PrefabObject.EditorData editor = new PrefabObject.EditorData();
+
+            JToken token = JToken.ReadFrom(reader);
+            if (token.Type == JTokenType.Object)
+            {
+                JObject obj = (JObject)token;
+                editor.Locked = obj.Value<bool>("locked");
+                editor.Collapse = obj.Value<bool>("shrink");
+                editor.Bin = obj.Value<int>("bin");
+                editor.Layer = obj.Value<int>("layer");
+            }
+
+            return editor;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -193,7 +271,39 @@ namespace PAPrefabToolkit.Data
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            PrefabObject.Events prefabEvents = new PrefabObject.Events();
+
+            JToken token = JToken.ReadFrom(reader);
+            if (token.Type == JTokenType.Object)
+            {
+                JObject obj = (JObject)token;
+
+                JArray positionArr = obj.Value<JArray>("pos");
+                PrefabObject.Events.PositionEvent[] positionEvents = new PrefabObject.Events.PositionEvent[positionArr.Count];
+                for (int i = 0; i < positionArr.Count; i++)
+                    positionEvents[i] = serializer.Deserialize<PrefabObject.Events.PositionEvent>(positionArr[i].CreateReader());
+                prefabEvents.PositionEvents = positionEvents.ToList();
+
+                JArray scaleArr = obj.Value<JArray>("sca");
+                PrefabObject.Events.ScaleEvent[] scaleEvents = new PrefabObject.Events.ScaleEvent[scaleArr.Count];
+                for (int i = 0; i < scaleArr.Count; i++)
+                    scaleEvents[i] = serializer.Deserialize<PrefabObject.Events.ScaleEvent>(scaleArr[i].CreateReader());
+                prefabEvents.ScaleEvents = scaleEvents.ToList();
+
+                JArray rotationArr = obj.Value<JArray>("rot");
+                PrefabObject.Events.RotationEvent[] rotationEvents = new PrefabObject.Events.RotationEvent[rotationArr.Count];
+                for (int i = 0; i < rotationArr.Count; i++)
+                    rotationEvents[i] = serializer.Deserialize<PrefabObject.Events.RotationEvent>(rotationArr[i].CreateReader());
+                prefabEvents.RotationEvents = rotationEvents.ToList();
+
+                JArray colorArr = obj.Value<JArray>("col");
+                PrefabObject.Events.ColorEvent[] colorEvents = new PrefabObject.Events.ColorEvent[colorArr.Count];
+                for (int i = 0; i < colorArr.Count; i++)
+                    colorEvents[i] = serializer.Deserialize<PrefabObject.Events.ColorEvent>(colorArr[i].CreateReader());
+                prefabEvents.ColorEvents = colorEvents.ToList();
+            }
+
+            return prefabEvents;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -229,7 +339,18 @@ namespace PAPrefabToolkit.Data
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            PrefabObject.Events.PositionEvent positionEvent = new PrefabObject.Events.PositionEvent();
+
+            JToken token = JToken.ReadFrom(reader);
+            if (token.Type == JTokenType.Object)
+            {
+                JObject obj = (JObject)token;
+                positionEvent.Time = token.Value<float>("t");
+                positionEvent.X = token.Value<float>("x");
+                positionEvent.Y = token.Value<float>("y");
+            }
+
+            return positionEvent;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -262,7 +383,18 @@ namespace PAPrefabToolkit.Data
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            PrefabObject.Events.ScaleEvent scaleEvent = new PrefabObject.Events.ScaleEvent();
+
+            JToken token = JToken.ReadFrom(reader);
+            if (token.Type == JTokenType.Object)
+            {
+                JObject obj = (JObject)token;
+                scaleEvent.Time = token.Value<float>("t");
+                scaleEvent.X = token.Value<float>("x");
+                scaleEvent.Y = token.Value<float>("y");
+            }
+
+            return scaleEvent;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -295,7 +427,17 @@ namespace PAPrefabToolkit.Data
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            PrefabObject.Events.RotationEvent rotationEvent = new PrefabObject.Events.RotationEvent();
+
+            JToken token = JToken.ReadFrom(reader);
+            if (token.Type == JTokenType.Object)
+            {
+                JObject obj = (JObject)token;
+                rotationEvent.Time = token.Value<float>("t");
+                rotationEvent.X = token.Value<float>("x");
+            }
+
+            return rotationEvent;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -325,7 +467,17 @@ namespace PAPrefabToolkit.Data
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            PrefabObject.Events.ColorEvent colorEvent = new PrefabObject.Events.ColorEvent();
+
+            JToken token = JToken.ReadFrom(reader);
+            if (token.Type == JTokenType.Object)
+            {
+                JObject obj = (JObject)token;
+                colorEvent.Time = token.Value<float>("t");
+                colorEvent.X = token.Value<float>("x");
+            }
+
+            return colorEvent;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

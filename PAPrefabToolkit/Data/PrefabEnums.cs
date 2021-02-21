@@ -38,7 +38,7 @@ namespace PAPrefabToolkit.Data
     public enum PrefabObjectShape : int
     {
         Square = 0,
-        Hexagon = 1,
+        Circle = 1,
         Triangle = 2,
         ArrowUp = 3,
         Text = 4,

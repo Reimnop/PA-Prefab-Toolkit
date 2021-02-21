@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PAPrefabParser\PAPrefabToolkit.csproj" />
+    <ProjectReference Include="..\PAPrefabToolkit\PAPrefabToolkit.csproj" />
   </ItemGroup>
 
 </Project>

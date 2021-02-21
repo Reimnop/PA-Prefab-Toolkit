@@ -79,6 +79,11 @@ namespace PAPrefabToolkit.Data
             public List<ColorEvent> ColorEvents = new List<ColorEvent>() { new ColorEvent() };
         }
 
+        internal PrefabObject()
+        {
+
+        }
+
         /// <summary>
         /// The Object's Id.
         /// </summary>
