@@ -37,6 +37,48 @@ namespace PAPrefabParser.Data
     /// </summary>
     public class PrefabObject
     {
+        public class EditorData
+        {
+            public bool Locked;
+            public bool Collapse;
+            public int Bin;
+            public int Layer;
+        }
+
+        public class Events
+        {
+            public struct PositionEvent
+            {
+                public float Time;
+                public float X;
+                public float Y;
+            }
+
+            public struct ScaleEvent
+            {
+                public float Time;
+                public float X;
+                public float Y;
+            }
+
+            public struct RotationEvent
+            {
+                public float Time;
+                public float X;
+            }
+
+            public struct ColorEvent
+            {
+                public float Time;
+                public float X;
+            }
+
+            public List<PositionEvent> PositionEvents = new List<PositionEvent>() { new PositionEvent() };
+            public List<ScaleEvent> ScaleEvents = new List<ScaleEvent>() { new ScaleEvent() };
+            public List<RotationEvent> RotationEvents = new List<RotationEvent>() { new RotationEvent() };
+            public List<ColorEvent> ColorEvents = new List<ColorEvent>() { new ColorEvent() };
+        }
+
         /// <summary>
         /// The Object's Id.
         /// </summary>
@@ -45,7 +87,7 @@ namespace PAPrefabParser.Data
         /// <summary>
         /// The Object's Parent Type.
         /// </summary>
-        public (bool PositionParenting, bool ScaleParenting, bool RotationParenting) ParentType;
+        public (bool PositionParenting, bool ScaleParenting, bool RotationParenting) ParentType = (true, false, true);
 
         /// <summary>
         /// The offset from parent.
@@ -100,14 +142,8 @@ namespace PAPrefabParser.Data
 
         public Vector2 Origin;
 
-        public Events ObjectEvents;
+        public EditorData Editor = new EditorData();
 
-        public class Events
-        {
-            public (float Time, float X, float Y)[] PositionEvents;
-            public (float Time, float X, float Y)[] ScaleEvents;
-            public (float Time, float X)[] RotationEvents;
-            public (float Time, float X)[] ColorEvents;
-        }
+        public Events ObjectEvents = new Events();
     }
 }
