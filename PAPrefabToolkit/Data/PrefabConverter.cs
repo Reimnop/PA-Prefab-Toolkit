@@ -1,13 +1,11 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PAPrefabToolkit.Data
 {
-    public class PrefabConverter : JsonConverter
+    internal class PrefabConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -68,7 +66,7 @@ namespace PAPrefabToolkit.Data
         }
     }
 
-    public class PrefabObjectConverter : JsonConverter
+    internal class PrefabObjectConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -217,7 +215,7 @@ namespace PAPrefabToolkit.Data
         }
     }
 
-    public class PrefabEditorDataConverter : JsonConverter
+    internal class PrefabEditorDataConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -262,7 +260,7 @@ namespace PAPrefabToolkit.Data
         }
     }
 
-    public class PrefabEventsConverter : JsonConverter
+    internal class PrefabEventsConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -330,7 +328,7 @@ namespace PAPrefabToolkit.Data
         }
     }
 
-    public class PrefabPositionEventConverter : JsonConverter
+    internal class PrefabPositionEventConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -374,7 +372,7 @@ namespace PAPrefabToolkit.Data
         }
     }
 
-    public class PrefabScaleEventConverter : JsonConverter
+    internal class PrefabScaleEventConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -418,7 +416,7 @@ namespace PAPrefabToolkit.Data
         }
     }
 
-    public class PrefabRotationEventConverter : JsonConverter
+    internal class PrefabRotationEventConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -458,7 +456,7 @@ namespace PAPrefabToolkit.Data
         }
     }
 
-    public class PrefabColorEventConverter : JsonConverter
+    internal class PrefabColorEventConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {

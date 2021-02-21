@@ -1,8 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace PAPrefabToolkit.Data
 {
@@ -37,16 +34,44 @@ namespace PAPrefabToolkit.Data
     /// </summary>
     public class PrefabObject
     {
+        /// <summary>
+        /// The EditorData clas. Contains object's editor data.
+        /// </summary>
         public class EditorData
         {
+            internal EditorData() { }
+
+            /// <summary>
+            /// The Editor locked state.
+            /// </summary>
             public bool Locked;
+
+            /// <summary>
+            /// The Editor collapsed state.
+            /// </summary>
             public bool Collapse;
+
+            /// <summary>
+            /// The Editor bin.
+            /// </summary>
             public int Bin;
+
+            /// <summary>
+            /// The Editor layer.
+            /// </summary>
             public int Layer;
         }
 
+        /// <summary>
+        /// The Events class. Contains object events.
+        /// </summary>
         public class Events
         {
+            internal Events() { }
+
+            /// <summary>
+            /// The Object's position event struct.
+            /// </summary>
             public struct PositionEvent
             {
                 public float Time;
@@ -54,6 +79,9 @@ namespace PAPrefabToolkit.Data
                 public float Y;
             }
 
+            /// <summary>
+            /// The Object's scale event struct.
+            /// </summary>
             public struct ScaleEvent
             {
                 public float Time;
@@ -61,27 +89,43 @@ namespace PAPrefabToolkit.Data
                 public float Y;
             }
 
+            /// <summary>
+            /// The Object's rotation event struct.
+            /// </summary>
             public struct RotationEvent
             {
                 public float Time;
                 public float X;
             }
 
+            /// <summary>
+            /// The Object's color event struct.
+            /// </summary>
             public struct ColorEvent
             {
                 public float Time;
                 public float X;
             }
 
+            /// <summary>
+            /// The Object's position events list.
+            /// </summary>
             public List<PositionEvent> PositionEvents = new List<PositionEvent>() { new PositionEvent() };
+
+            /// <summary>
+            /// The Object's scale events list.
+            /// </summary>
             public List<ScaleEvent> ScaleEvents = new List<ScaleEvent>() { new ScaleEvent() };
+
+            /// <summary>
+            /// The Object's rotation events list.
+            /// </summary>
             public List<RotationEvent> RotationEvents = new List<RotationEvent>() { new RotationEvent() };
+
+            /// <summary>
+            /// The Object's color events list.
+            /// </summary>
             public List<ColorEvent> ColorEvents = new List<ColorEvent>() { new ColorEvent() };
-        }
-
-        internal PrefabObject()
-        {
-
         }
 
         /// <summary>
@@ -139,16 +183,29 @@ namespace PAPrefabToolkit.Data
         /// </summary>
         public PrefabObjectAutoKillType AutoKillType;
 
-        //TODO: Someone add the rest of the comments thanks a lot.
-
+        /// <summary>
+        /// The Object's auto kill offset.
+        /// </summary>
         public float AutoKillOffset;
 
+        /// <summary>
+        /// The Object's shape option.
+        /// </summary>
         public int ShapeOption;
 
+        /// <summary>
+        /// The Object's origin.
+        /// </summary>
         public Vector2 Origin;
 
+        /// <summary>
+        /// The Object's editor data.
+        /// </summary>
         public EditorData Editor = new EditorData();
 
+        /// <summary>
+        /// The Object's events.
+        /// </summary>
         public Events ObjectEvents = new Events();
     }
 }

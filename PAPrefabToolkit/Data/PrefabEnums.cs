@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PAPrefabToolkit.Data
+﻿namespace PAPrefabToolkit.Data
 {
     /// <summary>
     /// Prefab Type enum. Contains all possible prefab types.
