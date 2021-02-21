@@ -151,7 +151,7 @@ namespace PAPrefabToolkit.Data
         /// <summary>
         /// The Object's Render depth.
         /// </summary>
-        public int Depth;
+        public int Depth = 15;
 
         /// <summary>
         /// The Object's type.
