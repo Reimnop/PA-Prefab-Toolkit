@@ -1,4 +1,4 @@
-# PAPrefabToolkit
+# Project Arrhythmia Prefab Toolkit
  A library for modifying and creating [Project Arrhythmia](https://store.steampowered.com/app/440310/Project_Arrhythmia/) prefabs.
 
 **Important!**
