@@ -77,6 +77,7 @@ namespace PAPrefabToolkit.Data
                 public float Time;
                 public float X;
                 public float Y;
+                public PrefabObjectEasing CurveType;
             }
 
             /// <summary>
@@ -87,6 +88,7 @@ namespace PAPrefabToolkit.Data
                 public float Time;
                 public float X;
                 public float Y;
+                public PrefabObjectEasing CurveType;
             }
 
             /// <summary>
@@ -96,6 +98,7 @@ namespace PAPrefabToolkit.Data
             {
                 public float Time;
                 public float X;
+                public PrefabObjectEasing CurveType;
             }
 
             /// <summary>
@@ -105,6 +108,7 @@ namespace PAPrefabToolkit.Data
             {
                 public float Time;
                 public float X;
+                public PrefabObjectEasing CurveType;
             }
 
             /// <summary>

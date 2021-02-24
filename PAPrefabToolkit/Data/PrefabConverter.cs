@@ -1,10 +1,77 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PAPrefabToolkit.Data
 {
+    public static class EaseStringConverter
+    {
+        private static Dictionary<PrefabObjectEasing, string> easingsToString = new Dictionary<PrefabObjectEasing, string>()
+        {
+            { PrefabObjectEasing.Linear, "Linear" },
+            { PrefabObjectEasing.Instant, "Instant" },
+            { PrefabObjectEasing.InSine, "InSine" },
+            { PrefabObjectEasing.OutSine, "OutSine" },
+            { PrefabObjectEasing.InOutSine, "InOutSine" },
+            { PrefabObjectEasing.InElastic, "InElastic" },
+            { PrefabObjectEasing.OutElastic, "OutElastic" },
+            { PrefabObjectEasing.InOutElastic, "InOutElastic" },
+            { PrefabObjectEasing.InBack, "InBack" },
+            { PrefabObjectEasing.OutBack, "OutBack" },
+            { PrefabObjectEasing.InOutBack, "InOutBack" },
+            { PrefabObjectEasing.InBounce, "InBounce" },
+            { PrefabObjectEasing.OutBounce, "OutBounce" },
+            { PrefabObjectEasing.InOutBounce, "InOutBounce" },
+            { PrefabObjectEasing.InQuad, "InQuad" },
+            { PrefabObjectEasing.OutQuad, "OutQuad" },
+            { PrefabObjectEasing.InOutQuad, "InOutQuad" },
+            { PrefabObjectEasing.InCirc, "InCirc" },
+            { PrefabObjectEasing.OutCirc, "OutCirc" },
+            { PrefabObjectEasing.InOutCirc, "InOutCirc" },
+            { PrefabObjectEasing.InExpo, "InExpo" },
+            { PrefabObjectEasing.OutExpo, "OutExpo" },
+            { PrefabObjectEasing.InOutExpo, "InOutExpo" }
+        };
+        private static Dictionary<string, PrefabObjectEasing> stringToEasings = new Dictionary<string, PrefabObjectEasing>()
+        {
+            { "Linear", PrefabObjectEasing.Linear },
+            { "Instant", PrefabObjectEasing.Instant },
+            { "InSine", PrefabObjectEasing.InSine },
+            { "OutSine", PrefabObjectEasing.OutSine },
+            { "InOutSine", PrefabObjectEasing.InOutSine },
+            { "InElastic", PrefabObjectEasing.InElastic },
+            { "OutElastic", PrefabObjectEasing.OutElastic },
+            { "InOutElastic", PrefabObjectEasing.InOutElastic },
+            { "InBack", PrefabObjectEasing.InBack },
+            { "OutBack", PrefabObjectEasing.OutBack },
+            { "InOutBack", PrefabObjectEasing.InOutBack },
+            { "InBounce", PrefabObjectEasing.InBounce },
+            { "OutBounce", PrefabObjectEasing.OutBounce },
+            { "InOutBounce", PrefabObjectEasing.InOutBounce },
+            { "InQuad", PrefabObjectEasing.InQuad },
+            { "OutQuad", PrefabObjectEasing.OutQuad },
+            { "InOutQuad", PrefabObjectEasing.InOutQuad },
+            { "InCirc", PrefabObjectEasing.InCirc },
+            { "OutCirc", PrefabObjectEasing.OutCirc },
+            { "InOutCirc", PrefabObjectEasing.InOutCirc },
+            { "InExpo", PrefabObjectEasing.InExpo },
+            { "OutExpo", PrefabObjectEasing.OutExpo },
+            { "InOutExpo", PrefabObjectEasing.InOutExpo }
+        };
+
+        public static string EaseToString(PrefabObjectEasing easing)
+        {
+            return easingsToString[easing];
+        }
+
+        public static PrefabObjectEasing StringToEase(string easingStr)
+        {
+            return stringToEasings[easingStr];
+        }
+    }
+
     internal class PrefabConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
@@ -346,6 +413,10 @@ namespace PAPrefabToolkit.Data
                 positionEvent.Time = token.Value<float>("t");
                 positionEvent.X = token.Value<float>("x");
                 positionEvent.Y = token.Value<float>("y");
+
+                string str = token.Value<string>("ct");
+                if (!string.IsNullOrEmpty(str))
+                    positionEvent.CurveType = EaseStringConverter.StringToEase(str);
             }
 
             return positionEvent;
@@ -366,6 +437,9 @@ namespace PAPrefabToolkit.Data
 
             writer.WritePropertyName("y");
             writer.WriteValue(positionEvent.Y.ToString());
+
+            writer.WritePropertyName("ct");
+            writer.WriteValue(EaseStringConverter.EaseToString(positionEvent.CurveType));
 
             //end the block
             writer.WriteEndObject();
@@ -390,6 +464,10 @@ namespace PAPrefabToolkit.Data
                 scaleEvent.Time = token.Value<float>("t");
                 scaleEvent.X = token.Value<float>("x");
                 scaleEvent.Y = token.Value<float>("y");
+
+                string str = token.Value<string>("ct");
+                if (!string.IsNullOrEmpty(str))
+                    scaleEvent.CurveType = EaseStringConverter.StringToEase(str);
             }
 
             return scaleEvent;
@@ -410,6 +488,9 @@ namespace PAPrefabToolkit.Data
 
             writer.WritePropertyName("y");
             writer.WriteValue(scaleEvent.Y.ToString());
+
+            writer.WritePropertyName("ct");
+            writer.WriteValue(EaseStringConverter.EaseToString(scaleEvent.CurveType));
 
             //end the block
             writer.WriteEndObject();
@@ -433,6 +514,10 @@ namespace PAPrefabToolkit.Data
                 JObject obj = (JObject)token;
                 rotationEvent.Time = token.Value<float>("t");
                 rotationEvent.X = token.Value<float>("x");
+
+                string str = token.Value<string>("ct");
+                if (!string.IsNullOrEmpty(str))
+                    rotationEvent.CurveType = EaseStringConverter.StringToEase(str);
             }
 
             return rotationEvent;
@@ -450,6 +535,9 @@ namespace PAPrefabToolkit.Data
 
             writer.WritePropertyName("x");
             writer.WriteValue(rotationEvent.X.ToString());
+
+            writer.WritePropertyName("ct");
+            writer.WriteValue(EaseStringConverter.EaseToString(rotationEvent.CurveType));
 
             //end the block
             writer.WriteEndObject();
@@ -473,6 +561,10 @@ namespace PAPrefabToolkit.Data
                 JObject obj = (JObject)token;
                 colorEvent.Time = token.Value<float>("t");
                 colorEvent.X = token.Value<float>("x");
+
+                string str = token.Value<string>("ct");
+                if (!string.IsNullOrEmpty(str))
+                    colorEvent.CurveType = EaseStringConverter.StringToEase(str);
             }
 
             return colorEvent;
@@ -490,6 +582,9 @@ namespace PAPrefabToolkit.Data
 
             writer.WritePropertyName("x");
             writer.WriteValue(colorEvent.X.ToString());
+
+            writer.WritePropertyName("ct");
+            writer.WriteValue(EaseStringConverter.EaseToString(colorEvent.CurveType));
 
             //end the block
             writer.WriteEndObject();
