@@ -52,4 +52,34 @@
         Fixed = 3,
         SongTime = 4
     }
+
+    /// <summary>
+    /// Prefab Object Easing enum. Contains all possible object curve types.
+    /// </summary>
+    public enum PrefabObjectEasing
+    {
+        Linear,
+        Instant,
+        InSine,
+        OutSine,
+        InOutSine,
+        InElastic,
+        OutElastic,
+        InOutElastic,
+        InBack,
+        OutBack,
+        InOutBack,
+        InBounce,
+        OutBounce,
+        InOutBounce,
+        InQuad,
+        OutQuad,
+        InOutQuad,
+        InCirc,
+        OutCirc,
+        InOutCirc,
+        InExpo,
+        OutExpo,
+        InOutExpo
+    }
 }
