@@ -8,6 +8,8 @@
     <Description>A library for creating and modifying Project Arrhythmia prefabs.</Description>
     <RepositoryUrl>https://github.com/UserTCQ/PA-Prefab-Toolkit</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
