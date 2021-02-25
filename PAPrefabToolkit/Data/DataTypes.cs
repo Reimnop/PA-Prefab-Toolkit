@@ -45,7 +45,7 @@ namespace PAPrefabToolkit.Data
                 Objects.Add(prefabObject);
                 return;
             }
-            throw new System.Exception($"Object {prefabObject.Name} shares the same ID with another object!\nConsider using Prefab.GenId() method to prevent collisions.");
+            throw new Exception($"Object {prefabObject.Name} shares the same ID with another object!\nConsider using Prefab.GenId() method to prevent collisions.");
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace PAPrefabToolkit.Data
             string str;
             do
                 str = RandomString(rng, 16);
-            while (!ids.Contains(str));
+            while (ids.Contains(str));
 
             return str;
         }
