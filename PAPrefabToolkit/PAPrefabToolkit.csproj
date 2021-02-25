@@ -2,15 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageProjectUrl>https://github.com/UserTCQ/PA-Prefab-Toolkit</PackageProjectUrl>
-    <Authors>UserTCQ</Authors>
+    <PackageProjectUrl>https://github.com/Reimnop/PA-Prefab-Toolkit</PackageProjectUrl>
+    <Authors>Reimnop</Authors>
     <Product>Project Arrhythmia Prefab Toolkit</Product>
     <Description>A library for creating and modifying Project Arrhythmia prefabs.</Description>
-    <RepositoryUrl>https://github.com/UserTCQ/PA-Prefab-Toolkit</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Reimnop/PA-Prefab-Toolkit</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
+    <Company>Reimnop</Company>
   </PropertyGroup>
 
   <ItemGroup>

@@ -160,8 +160,11 @@ namespace PAPrefabToolkit.Data
 
                 JArray arr = obj.Value<JArray>("po");
                 if (arr != null)
-                    for (int i = 0; i < 3; i++)
-                        prefabObject.ParentOffset[i] = arr[i].Value<float>();
+                {
+                    prefabObject.ParentOffset.PositionOffset = arr[0].Value<float>();
+                    prefabObject.ParentOffset.ScaleOffset = arr[1].Value<float>();
+                    prefabObject.ParentOffset.RotationOffset = arr[2].Value<float>();
+                }
 
                 prefabObject.ParentId = obj.Value<string>("p");
                 prefabObject.Depth = obj.Value<int>("d");
@@ -211,9 +214,9 @@ namespace PAPrefabToolkit.Data
             //object parent offset
             writer.WritePropertyName("po");
             writer.WriteStartArray();
-            writer.WriteValue(prefabObject.ParentOffset[0].ToString());
-            writer.WriteValue(prefabObject.ParentOffset[1].ToString());
-            writer.WriteValue(prefabObject.ParentOffset[2].ToString());
+            writer.WriteValue(prefabObject.ParentOffset.PositionOffset.ToString());
+            writer.WriteValue(prefabObject.ParentOffset.ScaleOffset.ToString());
+            writer.WriteValue(prefabObject.ParentOffset.RotationOffset.ToString());
             writer.WriteEndArray();
 
             //object parent id

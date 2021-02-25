@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace PAPrefabToolkit.Data
@@ -26,7 +27,73 @@ namespace PAPrefabToolkit.Data
         /// <summary>
         /// Prefab Objects list. Contains all objects in a prefab.
         /// </summary>
-        public List<PrefabObject> Objects;
+        internal List<PrefabObject> Objects = new List<PrefabObject>();
+
+        //hash set to keep track of ids, to prevent collision
+        private readonly HashSet<string> ids = new HashSet<string>();
+
+        /// <summary>
+        /// Add an Object to a Prefab.
+        /// </summary>
+        /// <param name="prefabObject">An instance of PrefabObject.</param>
+        public void AddObject(PrefabObject prefabObject)
+        {
+            //basically idiot check
+            if (!ids.Contains(prefabObject.Id))
+            {
+                ids.Add(prefabObject.Id);
+                Objects.Add(prefabObject);
+                return;
+            }
+            throw new System.Exception($"Object {prefabObject.Name} shares the same ID with another object!\nConsider using Prefab.GenId() method to prevent collisions.");
+        }
+
+        /// <summary>
+        /// Remove an Object from a Prefab.
+        /// </summary>
+        /// <param name="prefabObject">An instance of PrefabObject that is previously added into this Prefab.</param>
+        public void RemoveObject(PrefabObject prefabObject)
+        {
+            //basically idiot check
+            if (Objects.Contains(prefabObject))
+            {
+                if (ids.Contains(prefabObject.Id))
+                    ids.Remove(prefabObject.Id);
+
+                Objects.Remove(prefabObject);
+                return;
+            }
+            throw new System.Exception($"Object {prefabObject.Name} is not a member of this Prefab!");
+        }
+
+        /// <summary>
+        /// Generates a random ID for an object. Ensures no collision can happen.
+        /// </summary>
+        /// <returns>A random ID.</returns>
+        public string GenId()
+        {
+            Random rng = new Random();
+
+            string str;
+            do
+                str = RandomString(rng, 16);
+            while (!ids.Contains(str));
+
+            return str;
+        }
+
+        //method to generate random string
+        private string RandomString(Random random, int length)
+        {
+            const string rndChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*_+{}|:<>?,./;'()[]";
+
+            string str = string.Empty;
+
+            for (int i = 0; i < length; i++)
+                str += rndChars[random.Next(0, rndChars.Length)];
+
+            return str;
+        }
     }
 
     /// <summary>
@@ -119,7 +186,7 @@ namespace PAPrefabToolkit.Data
             /// <summary>
             /// The Object's scale events list.
             /// </summary>
-            public List<ScaleEvent> ScaleEvents = new List<ScaleEvent>() { new ScaleEvent() };
+            public List<ScaleEvent> ScaleEvents = new List<ScaleEvent>() { new ScaleEvent() { X = 1.0f, Y = 1.0f } };
 
             /// <summary>
             /// The Object's rotation events list.
@@ -130,6 +197,32 @@ namespace PAPrefabToolkit.Data
             /// The Object's color events list.
             /// </summary>
             public List<ColorEvent> ColorEvents = new List<ColorEvent>() { new ColorEvent() };
+        }
+
+        internal PrefabObject() { }
+
+        /// <summary>
+        /// The constructor of the PrefabObject type.
+        /// </summary>
+        /// <param name="prefab">The prefab this object is being added to.</param>
+        /// <param name="name">Name of this object.</param>
+        /// <param name="id">ID of this object. (null: random ID)</param>
+        /// <param name="parent">(Optional) Parent of this object.</param>
+        public PrefabObject(Prefab prefab, string name, string id = null, PrefabObject parent = null)
+        {
+            if (name != null)
+                Name = name;
+            else
+                throw new NullReferenceException("**name** was null.");
+
+            if (id != null)
+                Id = id;
+            else
+                Id = prefab.GenId();
+
+            ParentId = parent != null ? parent.Id : string.Empty;
+
+            prefab.AddObject(this);
         }
 
         /// <summary>
@@ -145,7 +238,7 @@ namespace PAPrefabToolkit.Data
         /// <summary>
         /// The offset from parent.
         /// </summary>
-        public float[] ParentOffset = new float[3];
+        public (float PositionOffset, float ScaleOffset, float RotationOffset) ParentOffset = (0.0f, 0.0f, 0.0f);
 
         /// <summary>
         /// The Object's Parent's Id.

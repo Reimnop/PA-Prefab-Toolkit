@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PAPrefabToolkit.Data;
+using System.Diagnostics;
 
 namespace PAPrefabToolkit
 {
@@ -23,8 +24,16 @@ namespace PAPrefabToolkit
         /// <param name="prefab">Prefab class</param>
         /// <param name="formatting">Output formatting</param>
         /// <returns>Raw prefab JSON</returns>
-        public static string BuildPrefab(Prefab prefab, Formatting formatting = Formatting.None)
+        public static string BuildPrefab(Prefab prefab, Formatting formatting = Formatting.None, bool noValidate = false)
         {
+            if (!noValidate)
+            {
+                PrefabValidator validator = new PrefabValidator(prefab);
+                validator.Validate();
+            }
+            else
+                Debug.WriteLine("Warning: Prefab validation is disabled. May cause unexpected behaviour in-game.");
+
             return JsonConvert.SerializeObject(prefab, formatting, converters);
         }
 
