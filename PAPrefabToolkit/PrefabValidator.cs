@@ -47,6 +47,12 @@ namespace PAPrefabToolkit
                     idCheck.Add(id);
                 else
                     throw new Exception($"Duplicate ID ({id}) detected!");
+
+            //check for parent ID
+            foreach (var obj in prefab.Objects)
+                if (obj.ParentId != string.Empty)
+                    if (!idCheck.Contains(obj.ParentId))
+                        throw new Exception($"Object with ID {obj.ParentId} does not exist!");
         }
 
         private void ValidateEvents()

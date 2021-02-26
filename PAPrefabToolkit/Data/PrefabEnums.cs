@@ -82,4 +82,15 @@
         OutExpo,
         InOutExpo
     }
+
+    /// <summary>
+    /// Prefab Object Random Mode enum. Contains all possible object random modes.
+    /// </summary>
+    public enum PrefabObjectRandomMode : int
+    {
+        None = 0,
+        Range = 1,
+        Select = 3,
+        Scale = 4
+    }
 }

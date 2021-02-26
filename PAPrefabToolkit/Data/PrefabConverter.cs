@@ -420,6 +420,15 @@ namespace PAPrefabToolkit.Data
                 string str = token.Value<string>("ct");
                 if (!string.IsNullOrEmpty(str))
                     positionEvent.CurveType = EaseStringConverter.StringToEase(str);
+
+                int rnd = token.Value<int>("r");
+                if (rnd != 0)
+                {
+                    positionEvent.RandomMode = (PrefabObjectRandomMode)rnd;
+                    positionEvent.RandomX = token.Value<float>("rx");
+                    positionEvent.RandomY = token.Value<float>("ry");
+                    positionEvent.RandomInterval = token.Value<float>("rz");
+                }
             }
 
             return positionEvent;
@@ -443,6 +452,21 @@ namespace PAPrefabToolkit.Data
 
             writer.WritePropertyName("ct");
             writer.WriteValue(EaseStringConverter.EaseToString(positionEvent.CurveType));
+
+            if (positionEvent.RandomMode != PrefabObjectRandomMode.None)
+            {
+                writer.WritePropertyName("r");
+                writer.WriteValue(((int)positionEvent.RandomMode).ToString());
+
+                writer.WritePropertyName("rx");
+                writer.WriteValue(positionEvent.RandomX.ToString());
+
+                writer.WritePropertyName("ry");
+                writer.WriteValue(positionEvent.RandomY.ToString());
+
+                writer.WritePropertyName("rz");
+                writer.WriteValue(positionEvent.RandomInterval.ToString());
+            }
 
             //end the block
             writer.WriteEndObject();
@@ -471,6 +495,15 @@ namespace PAPrefabToolkit.Data
                 string str = token.Value<string>("ct");
                 if (!string.IsNullOrEmpty(str))
                     scaleEvent.CurveType = EaseStringConverter.StringToEase(str);
+
+                int rnd = token.Value<int>("r");
+                if (rnd != 0)
+                {
+                    scaleEvent.RandomMode = (PrefabObjectRandomMode)rnd;
+                    scaleEvent.RandomX = token.Value<float>("rx");
+                    scaleEvent.RandomY = token.Value<float>("ry");
+                    scaleEvent.RandomInterval = token.Value<float>("rz");
+                }
             }
 
             return scaleEvent;
@@ -494,6 +527,21 @@ namespace PAPrefabToolkit.Data
 
             writer.WritePropertyName("ct");
             writer.WriteValue(EaseStringConverter.EaseToString(scaleEvent.CurveType));
+
+            if (scaleEvent.RandomMode != PrefabObjectRandomMode.None)
+            {
+                writer.WritePropertyName("r");
+                writer.WriteValue(((int)scaleEvent.RandomMode).ToString());
+
+                writer.WritePropertyName("rx");
+                writer.WriteValue(scaleEvent.RandomX.ToString());
+
+                writer.WritePropertyName("ry");
+                writer.WriteValue(scaleEvent.RandomY.ToString());
+
+                writer.WritePropertyName("rz");
+                writer.WriteValue(scaleEvent.RandomInterval.ToString());
+            }
 
             //end the block
             writer.WriteEndObject();
@@ -521,6 +569,14 @@ namespace PAPrefabToolkit.Data
                 string str = token.Value<string>("ct");
                 if (!string.IsNullOrEmpty(str))
                     rotationEvent.CurveType = EaseStringConverter.StringToEase(str);
+
+                int rnd = token.Value<int>("r");
+                if (rnd != 0)
+                {
+                    rotationEvent.RandomMode = (PrefabObjectRandomMode)rnd;
+                    rotationEvent.RandomX = token.Value<float>("rx");
+                    rotationEvent.RandomInterval = token.Value<float>("rz");
+                }
             }
 
             return rotationEvent;
@@ -541,6 +597,18 @@ namespace PAPrefabToolkit.Data
 
             writer.WritePropertyName("ct");
             writer.WriteValue(EaseStringConverter.EaseToString(rotationEvent.CurveType));
+
+            if (rotationEvent.RandomMode != PrefabObjectRandomMode.None)
+            {
+                writer.WritePropertyName("r");
+                writer.WriteValue(((int)rotationEvent.RandomMode).ToString());
+
+                writer.WritePropertyName("rx");
+                writer.WriteValue(rotationEvent.RandomX.ToString());
+
+                writer.WritePropertyName("rz");
+                writer.WriteValue(rotationEvent.RandomInterval.ToString());
+            }
 
             //end the block
             writer.WriteEndObject();
@@ -568,6 +636,13 @@ namespace PAPrefabToolkit.Data
                 string str = token.Value<string>("ct");
                 if (!string.IsNullOrEmpty(str))
                     colorEvent.CurveType = EaseStringConverter.StringToEase(str);
+
+                int rnd = token.Value<int>("r");
+                if (rnd != 0)
+                {
+                    colorEvent.RandomMode = (PrefabObjectRandomMode)rnd;
+                    colorEvent.RandomX = token.Value<float>("rx");
+                }
             }
 
             return colorEvent;
@@ -588,6 +663,15 @@ namespace PAPrefabToolkit.Data
 
             writer.WritePropertyName("ct");
             writer.WriteValue(EaseStringConverter.EaseToString(colorEvent.CurveType));
+
+            if (colorEvent.RandomMode != PrefabObjectRandomMode.None)
+            {
+                writer.WritePropertyName("r");
+                writer.WriteValue(((int)colorEvent.RandomMode).ToString());
+
+                writer.WritePropertyName("rx");
+                writer.WriteValue(colorEvent.RandomX.ToString());
+            }
 
             //end the block
             writer.WriteEndObject();

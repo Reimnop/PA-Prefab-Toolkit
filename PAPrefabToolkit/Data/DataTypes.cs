@@ -145,6 +145,12 @@ namespace PAPrefabToolkit.Data
                 public float X;
                 public float Y;
                 public PrefabObjectEasing CurveType;
+
+                //random fields
+                public PrefabObjectRandomMode RandomMode;
+                public float RandomX;
+                public float RandomY;
+                public float RandomInterval;
             }
 
             /// <summary>
@@ -156,6 +162,12 @@ namespace PAPrefabToolkit.Data
                 public float X;
                 public float Y;
                 public PrefabObjectEasing CurveType;
+
+                //random fields
+                public PrefabObjectRandomMode RandomMode;
+                public float RandomX;
+                public float RandomY;
+                public float RandomInterval;
             }
 
             /// <summary>
@@ -166,6 +178,11 @@ namespace PAPrefabToolkit.Data
                 public float Time;
                 public float X;
                 public PrefabObjectEasing CurveType;
+
+                //random fields
+                public PrefabObjectRandomMode RandomMode;
+                public float RandomX;
+                public float RandomInterval;
             }
 
             /// <summary>
@@ -176,6 +193,10 @@ namespace PAPrefabToolkit.Data
                 public float Time;
                 public float X;
                 public PrefabObjectEasing CurveType;
+
+                //random fields
+                public PrefabObjectRandomMode RandomMode;
+                public float RandomX;
             }
 
             /// <summary>
