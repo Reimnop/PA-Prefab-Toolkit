@@ -12,6 +12,8 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Version>1.2.0</Version>
     <Company>Reimnop</Company>
+    <PackageReleaseNotes>Added Randomizations.
+Better error checking and prefab auto correction.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
