@@ -18,6 +18,5 @@ If you want to implement a feature, feel free to open a Pull request.
 - Creating and modifying prefabs
 
 ## Future plans
-- Randomization of events
 - Deletion of JSON properties
 - Support methods for ease of creating and modifying prefabs
