@@ -1,0 +1,260 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PAPrefabToolkit</name>
+    </assembly>
+    <members>
+        <member name="T:PAPrefabToolkit.Data.Prefab">
+            <summary>
+            The Prefab class. Contains all properties of a prefab.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.Prefab.Name">
+            <summary>
+            The Prefab's name.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.Prefab.Type">
+            <summary>
+            The Prefab's type.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.Prefab.Offset">
+            <summary>
+            The Prefab's offset.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.Prefab.Objects">
+            <summary>
+            Prefab Objects list. Contains all objects in a prefab.
+            </summary>
+        </member>
+        <member name="M:PAPrefabToolkit.Data.Prefab.AddObject(PAPrefabToolkit.Data.PrefabObject)">
+            <summary>
+            Add an Object to a Prefab.
+            </summary>
+            <param name="prefabObject">An instance of PrefabObject.</param>
+        </member>
+        <member name="M:PAPrefabToolkit.Data.Prefab.RemoveObject(PAPrefabToolkit.Data.PrefabObject)">
+            <summary>
+            Remove an Object from a Prefab.
+            </summary>
+            <param name="prefabObject">An instance of PrefabObject that is previously added into this Prefab.</param>
+        </member>
+        <member name="M:PAPrefabToolkit.Data.Prefab.GenId">
+            <summary>
+            Generates a random ID for an object. Ensures no collision can happen.
+            </summary>
+            <returns>A random ID.</returns>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObject">
+            <summary>
+            The Prefab Object class.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObject.EditorData">
+            <summary>
+            The EditorData clas. Contains object's editor data.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.EditorData.Locked">
+            <summary>
+            The Editor locked state.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.EditorData.Collapse">
+            <summary>
+            The Editor collapsed state.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.EditorData.Bin">
+            <summary>
+            The Editor bin.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.EditorData.Layer">
+            <summary>
+            The Editor layer.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObject.Events">
+            <summary>
+            The Events class. Contains object events.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObject.Events.PositionEvent">
+            <summary>
+            The Object's position event struct.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObject.Events.ScaleEvent">
+            <summary>
+            The Object's scale event struct.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObject.Events.RotationEvent">
+            <summary>
+            The Object's rotation event struct.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObject.Events.ColorEvent">
+            <summary>
+            The Object's color event struct.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Events.PositionEvents">
+            <summary>
+            The Object's position events list.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Events.ScaleEvents">
+            <summary>
+            The Object's scale events list.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Events.RotationEvents">
+            <summary>
+            The Object's rotation events list.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Events.ColorEvents">
+            <summary>
+            The Object's color events list.
+            </summary>
+        </member>
+        <member name="M:PAPrefabToolkit.Data.PrefabObject.#ctor(PAPrefabToolkit.Data.Prefab,System.String,System.String,PAPrefabToolkit.Data.PrefabObject)">
+            <summary>
+            The constructor of the PrefabObject type.
+            </summary>
+            <param name="prefab">The prefab this object is being added to.</param>
+            <param name="name">Name of this object.</param>
+            <param name="id">ID of this object. (null: random ID)</param>
+            <param name="parent">(Optional) Parent of this object.</param>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Id">
+            <summary>
+            The Object's Id.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.ParentType">
+            <summary>
+            The Object's Parent Type.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.ParentOffset">
+            <summary>
+            The offset from parent.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.ParentId">
+            <summary>
+            The Object's Parent's Id.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Depth">
+            <summary>
+            The Object's Render depth.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.ObjectType">
+            <summary>
+            The Object's type.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.StartTime">
+            <summary>
+            The Object's start time.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Text">
+            <summary>
+            The Object's text. (Only used for text objects)
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Name">
+            <summary>
+            The Object's name.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Shape">
+            <summary>
+            The Object's shape.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.AutoKillType">
+            <summary>
+            The Object's auto kill type.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.AutoKillOffset">
+            <summary>
+            The Object's auto kill offset.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.ShapeOption">
+            <summary>
+            The Object's shape option.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Origin">
+            <summary>
+            The Object's origin.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.Editor">
+            <summary>
+            The Object's editor data.
+            </summary>
+        </member>
+        <member name="F:PAPrefabToolkit.Data.PrefabObject.ObjectEvents">
+            <summary>
+            The Object's events.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabType">
+            <summary>
+            Prefab Type enum. Contains all possible prefab types.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObjectType">
+            <summary>
+            Prefab Object Type enum. Contains all possible object types.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObjectShape">
+            <summary>
+            Prefab Object Shape enum. Contains all possible object shapes.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObjectAutoKillType">
+            <summary>
+            Prefab Object Auto Kill Type enum. Contains all possible object auto kill types.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObjectEasing">
+            <summary>
+            Prefab Object Easing enum. Contains all possible object curve types.
+            </summary>
+        </member>
+        <member name="T:PAPrefabToolkit.Data.PrefabObjectRandomMode">
+            <summary>
+            Prefab Object Random Mode enum. Contains all possible object random modes.
+            </summary>
+        </member>
+        <member name="M:PAPrefabToolkit.PrefabBuilder.BuildPrefab(PAPrefabToolkit.Data.Prefab,Newtonsoft.Json.Formatting,System.Boolean)">
+            <summary>
+            Convert Prefab class into raw Prefab JSON.
+            </summary>
+            <param name="prefab">Prefab class</param>
+            <param name="formatting">Output formatting</param>
+            <returns>Raw prefab JSON</returns>
+        </member>
+        <member name="M:PAPrefabToolkit.PrefabBuilder.ReadPrefab(System.String)">
+            <summary>
+            Converts raw Prefab JSON into a Prefab class.
+            </summary>
+            <param name="prefabString">Raw prefab string</param>
+            <returns>Prefab class</returns>
+        </member>
+    </members>
+</doc>
