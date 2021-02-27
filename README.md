@@ -4,7 +4,7 @@
 **Important!**
 This library is finished, but it most likely bugs.
 If you encounter any bugs/mistakes or you have a feature request, please open an issue.
-If you want to implement a feature, feel free to open a Pull request.
+If you want to implement a feature, feel free to open a pull request.
 
 ## Installing the library (VS 2019)
 
