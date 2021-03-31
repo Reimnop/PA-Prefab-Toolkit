@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -23,6 +24,19 @@ namespace PAPrefabToolkit.Data
         /// The Prefab's offset.
         /// </summary>
         public float Offset;
+
+        internal Prefab() { }
+
+        /// <summary>
+        /// The constructor of the Prefab type.
+        /// </summary>
+        /// <param name="name">The name of the prefab.</param>
+        /// <param name="prefabType">The type of the prefab.</param>
+        public Prefab(string name, PrefabType prefabType = PrefabType.Bombs)
+        {
+            Name = name;
+            Type = prefabType;
+        }
 
         /// <summary>
         /// Prefab Objects list. Contains all objects in a prefab.
@@ -130,94 +144,160 @@ namespace PAPrefabToolkit.Data
         }
 
         /// <summary>
-        /// The Events class. Contains object events.
+        /// The ObjectEvents class. Contains object events.
         /// </summary>
-        public class Events
+        public class ObjectEvents
         {
-            internal Events() { }
+            internal ObjectEvents() { }
 
-            /// <summary>
-            /// The Object's position event struct.
-            /// </summary>
-            public struct PositionEvent
+            #region KeyframesDef
+            public interface IKeyframe
             {
-                public float Time;
-                public float X;
-                public float Y;
-                public PrefabObjectEasing CurveType;
+                public float Time { get; set; }
+            }
 
-                //random fields
+            //position struct
+            public struct PositionKeyframe : IKeyframe
+            {
+                public float Time { get; set; }
+                public Vector2 Value;
+
+                public PrefabObjectEasing Easing;
+
                 public PrefabObjectRandomMode RandomMode;
-                public float RandomX;
-                public float RandomY;
+                public Vector2 RandomValue;
                 public float RandomInterval;
             }
 
-            /// <summary>
-            /// The Object's scale event struct.
-            /// </summary>
-            public struct ScaleEvent
+            //scale struct
+            public struct ScaleKeyframe : IKeyframe
             {
-                public float Time;
-                public float X;
-                public float Y;
-                public PrefabObjectEasing CurveType;
+                public float Time { get; set; }
+                public Vector2 Value;
 
-                //random fields
+                public PrefabObjectEasing Easing;
+
                 public PrefabObjectRandomMode RandomMode;
-                public float RandomX;
-                public float RandomY;
+                public Vector2 RandomValue;
                 public float RandomInterval;
             }
 
-            /// <summary>
-            /// The Object's rotation event struct.
-            /// </summary>
-            public struct RotationEvent
+            //rotation struct
+            public struct RotationKeyframe : IKeyframe
             {
-                public float Time;
-                public float X;
-                public PrefabObjectEasing CurveType;
+                public float Time { get; set; }
+                public float Value;
 
-                //random fields
+                public PrefabObjectEasing Easing;
+
                 public PrefabObjectRandomMode RandomMode;
-                public float RandomX;
+                public float RandomValue;
                 public float RandomInterval;
             }
 
-            /// <summary>
-            /// The Object's color event struct.
-            /// </summary>
-            public struct ColorEvent
+            //color struct
+            public struct ColorKeyframe : IKeyframe
             {
-                public float Time;
-                public float X;
-                public PrefabObjectEasing CurveType;
+                public float Time { get; set; }
+                public int Value;
 
-                //random fields
-                public PrefabObjectRandomMode RandomMode;
-                public float RandomX;
+                public PrefabObjectEasing Easing;
+            }
+            #endregion
+
+            public class KeyframeList<T> where T : IKeyframe
+            {
+                private List<T> keyframes = new List<T>();
+
+                /// <summary>
+                /// Get number of keyframes.
+                /// </summary>
+                public int Count 
+                    => keyframes.Count;
+
+                public T this[int index]
+                    => keyframes[index];
+
+                internal KeyframeList(T defaultValue)
+                {
+                    keyframes.Add(defaultValue);
+                }
+
+                internal KeyframeList(List<T> newList)
+                {
+                    keyframes = newList;
+                }
+
+                internal List<T> GetInternalList()
+                    => keyframes;
+
+                /// <summary>
+                /// Add a keyframe to the sequence.
+                /// </summary>
+                /// <param name="keyframe">A keyframe.</param>
+                public void Add(T keyframe)
+                {
+                    if (keyframe.Time == 0.0f)
+                    {
+                        keyframes[0] = keyframe;
+                        return;
+                    }
+
+                    if (keyframe.Time > keyframes[keyframes.Count - 1].Time)
+                    {
+                        keyframes.Add(keyframe);
+                        return;
+                    }
+
+                    keyframes.Insert(FindIndexForSortedInsert(keyframe), keyframe);
+                }
+
+                //algorithms
+                private int FindIndexForSortedInsert(T item)
+                {
+                    if (keyframes.Count == 0)
+                    {
+                        return 0;
+                    }
+
+                    int lowerIndex = 0;
+                    int upperIndex = keyframes.Count - 1;
+                    int comparisonResult;
+                    while (lowerIndex < upperIndex)
+                    {
+                        int middleIndex = (lowerIndex + upperIndex) / 2;
+                        T middle = keyframes[middleIndex];
+                        comparisonResult = middle.Time.CompareTo(item.Time);
+                        if (comparisonResult == 0)
+                        {
+                            return middleIndex;
+                        }
+                        else if (comparisonResult > 0) // middle > item
+                        {
+                            upperIndex = middleIndex - 1;
+                        }
+                        else // middle < item
+                        {
+                            lowerIndex = middleIndex + 1;
+                        }
+                    }
+
+                    comparisonResult = keyframes[lowerIndex].Time.CompareTo(item.Time);
+                    if (comparisonResult < 0)
+                    {
+                        return lowerIndex + 1;
+                    }
+                    else
+                    {
+                        return lowerIndex;
+                    }
+                }
             }
 
-            /// <summary>
-            /// The Object's position events list.
-            /// </summary>
-            public List<PositionEvent> PositionEvents = new List<PositionEvent>() { new PositionEvent() };
-
-            /// <summary>
-            /// The Object's scale events list.
-            /// </summary>
-            public List<ScaleEvent> ScaleEvents = new List<ScaleEvent>() { new ScaleEvent() { X = 1.0f, Y = 1.0f } };
-
-            /// <summary>
-            /// The Object's rotation events list.
-            /// </summary>
-            public List<RotationEvent> RotationEvents = new List<RotationEvent>() { new RotationEvent() };
-
-            /// <summary>
-            /// The Object's color events list.
-            /// </summary>
-            public List<ColorEvent> ColorEvents = new List<ColorEvent>() { new ColorEvent() };
+            public KeyframeList<PositionKeyframe> PositionKeyframes { get; internal set; } = new KeyframeList<PositionKeyframe>(new PositionKeyframe { Value = Vector2.Zero });
+            public KeyframeList<ScaleKeyframe> ScaleKeyframes { get; internal set; } = new KeyframeList<ScaleKeyframe>(new ScaleKeyframe { Value = Vector2.One });
+            public KeyframeList<RotationKeyframe> RotationKeyframes { get; internal set; } = new KeyframeList<RotationKeyframe>(new RotationKeyframe { Value = 0.0f });
+            public KeyframeList<ColorKeyframe> ColorKeyframes { get; internal set; } = new KeyframeList<ColorKeyframe>(new ColorKeyframe { Value = 0 });
         }
 
         internal PrefabObject() { }
@@ -299,12 +379,12 @@ namespace PAPrefabToolkit.Data
         /// <summary>
         /// The Object's auto kill type.
         /// </summary>
-        public PrefabObjectAutoKillType AutoKillType;
+        public PrefabObjectAutoKillType AutoKillType = PrefabObjectAutoKillType.Fixed;
 
         /// <summary>
         /// The Object's auto kill offset.
         /// </summary>
-        public float AutoKillOffset;
+        public float AutoKillOffset = 1.0f;
 
         /// <summary>
         /// The Object's shape option.
@@ -314,16 +394,16 @@ namespace PAPrefabToolkit.Data
         /// <summary>
         /// The Object's origin.
         /// </summary>
-        public Vector2 Origin;
+        public (PrefabObjectOriginX X, PrefabObjectOriginY Y) Origin = (PrefabObjectOriginX.Center, PrefabObjectOriginY.Center);
 
         /// <summary>
         /// The Object's editor data.
         /// </summary>
-        public EditorData Editor = new EditorData();
+        public EditorData Editor { get; internal set; } = new EditorData();
 
         /// <summary>
         /// The Object's events.
         /// </summary>
-        public Events ObjectEvents = new Events();
+        public ObjectEvents Events { get; internal set; } = new ObjectEvents();
     }
 }

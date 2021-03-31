@@ -4,6 +4,9 @@ using System.Diagnostics;
 
 namespace PAPrefabToolkit
 {
+    /// <summary>
+    /// Prefab building helper class.
+    /// </summary>
     public static class PrefabBuilder
     {
         private static JsonConverter[] converters = new JsonConverter[]
@@ -12,10 +15,10 @@ namespace PAPrefabToolkit
             new PrefabObjectConverter(),
             new PrefabEditorDataConverter(),
             new PrefabEventsConverter(),
-            new PrefabPositionEventConverter(),
-            new PrefabScaleEventConverter(),
-            new PrefabRotationEventConverter(),
-            new PrefabColorEventConverter()
+            new PrefabPositionKeyframeConverter(),
+            new PrefabScaleKeyframeConverter(),
+            new PrefabRotationKeyframeConverter(),
+            new PrefabColorKeyframeConverter()
         };
 
         /// <summary>
@@ -24,18 +27,8 @@ namespace PAPrefabToolkit
         /// <param name="prefab">Prefab class</param>
         /// <param name="formatting">Output formatting</param>
         /// <returns>Raw prefab JSON</returns>
-        public static string BuildPrefab(Prefab prefab, Formatting formatting = Formatting.None, bool noValidate = false)
-        {
-            if (!noValidate)
-            {
-                PrefabValidator validator = new PrefabValidator(prefab);
-                validator.Validate();
-            }
-            else
-                Debug.WriteLine("Warning: Prefab validation is disabled. May cause unexpected behaviour in-game.");
-
-            return JsonConvert.SerializeObject(prefab, formatting, converters);
-        }
+        public static string BuildPrefab(Prefab prefab, Formatting formatting = Formatting.None)
+            => JsonConvert.SerializeObject(prefab, formatting, converters);
 
         /// <summary>
         /// Converts raw Prefab JSON into a Prefab class.
@@ -43,8 +36,6 @@ namespace PAPrefabToolkit
         /// <param name="prefabString">Raw prefab string</param>
         /// <returns>Prefab class</returns>
         public static Prefab ReadPrefab(string prefabString)
-        {
-            return JsonConvert.DeserializeObject<Prefab>(prefabString, converters);
-        }
+            => JsonConvert.DeserializeObject<Prefab>(prefabString, converters);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace PAPrefabToolkit.Data
+﻿using System;
+
+namespace PAPrefabToolkit.Data
 {
     /// <summary>
     /// Prefab Type enum. Contains all possible prefab types.
@@ -46,7 +48,9 @@
     /// </summary>
     public enum PrefabObjectAutoKillType : int
     {
-        None = 0,
+        [Obsolete]
+        NoAutokill = 0,
+
         LastKeyframe = 1,
         LastKeyframeOffset = 2,
         Fixed = 3,
@@ -92,5 +96,25 @@
         Range = 1,
         Select = 3,
         Scale = 4
+    }
+
+    /// <summary>
+    /// Prefab Object Origin enum.
+    /// </summary>
+    public enum PrefabObjectOriginX
+    {
+        Left,
+        Center,
+        Right
+    }
+
+    /// <summary>
+    /// Prefab Object Origin enum.
+    /// </summary>
+    public enum PrefabObjectOriginY
+    {
+        Bottom,
+        Center,
+        Top
     }
 }

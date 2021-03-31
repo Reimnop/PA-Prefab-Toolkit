@@ -179,8 +179,11 @@ namespace PAPrefabToolkit.Data
                 JObject origin = obj.Value<JObject>("o");
                 if (origin != null)
                 {
-                    prefabObject.Origin.X = origin.Value<float>("x");
-                    prefabObject.Origin.Y = origin.Value<float>("y");
+                    string xOrgStr = origin.Value<string>("x");
+                    string yOrgStr = origin.Value<string>("y");
+
+                    prefabObject.Origin.X = xOrgStr == "-0.5" ? PrefabObjectOriginX.Left : (xOrgStr == "0" ? PrefabObjectOriginX.Center : PrefabObjectOriginX.Right);
+                    prefabObject.Origin.Y = yOrgStr == "-0.5" ? PrefabObjectOriginY.Bottom : (yOrgStr == "0" ? PrefabObjectOriginY.Center : PrefabObjectOriginY.Top);
                 }
 
                 JObject editor = obj.Value<JObject>("ed");
@@ -188,7 +191,7 @@ namespace PAPrefabToolkit.Data
                     prefabObject.Editor = serializer.Deserialize<PrefabObject.EditorData>(editor.CreateReader());
 
                 JObject events = obj.Value<JObject>("events");
-                prefabObject.ObjectEvents = serializer.Deserialize<PrefabObject.Events>(events.CreateReader());
+                prefabObject.Events = serializer.Deserialize<PrefabObject.ObjectEvents>(events.CreateReader());
             }
             return prefabObject;
         }
@@ -266,9 +269,9 @@ namespace PAPrefabToolkit.Data
             writer.WriteStartObject();
             {
                 writer.WritePropertyName("x");
-                writer.WriteValue(prefabObject.Origin.X.ToString());
+                writer.WriteValue(prefabObject.Origin.X == PrefabObjectOriginX.Left ? "-0.5" : (prefabObject.Origin.X == PrefabObjectOriginX.Center ? "0" : "0.5"));
                 writer.WritePropertyName("y");
-                writer.WriteValue(prefabObject.Origin.Y.ToString());
+                writer.WriteValue(prefabObject.Origin.Y == PrefabObjectOriginY.Bottom ? "-0.5" : (prefabObject.Origin.Y == PrefabObjectOriginY.Center ? "0" : "0.5"));
             }
             writer.WriteEndObject();
 
@@ -278,7 +281,7 @@ namespace PAPrefabToolkit.Data
 
             //object events
             writer.WritePropertyName("events");
-            serializer.Serialize(writer, prefabObject.ObjectEvents);
+            serializer.Serialize(writer, prefabObject.Events);
 
             //end the block
             writer.WriteEndObject();
@@ -334,12 +337,12 @@ namespace PAPrefabToolkit.Data
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(PrefabObject.Events);
+            return objectType == typeof(PrefabObject.ObjectEvents);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            PrefabObject.Events prefabEvents = new PrefabObject.Events();
+            PrefabObject.ObjectEvents prefabEvents = new PrefabObject.ObjectEvents();
 
             JToken token = JToken.ReadFrom(reader);
             if (token.Type == JTokenType.Object)
@@ -347,28 +350,28 @@ namespace PAPrefabToolkit.Data
                 JObject obj = (JObject)token;
 
                 JArray positionArr = obj.Value<JArray>("pos");
-                PrefabObject.Events.PositionEvent[] positionEvents = new PrefabObject.Events.PositionEvent[positionArr.Count];
+                var positionKeyframes = new PrefabObject.ObjectEvents.PositionKeyframe[positionArr.Count];
                 for (int i = 0; i < positionArr.Count; i++)
-                    positionEvents[i] = serializer.Deserialize<PrefabObject.Events.PositionEvent>(positionArr[i].CreateReader());
-                prefabEvents.PositionEvents = positionEvents.ToList();
+                    positionKeyframes[i] = serializer.Deserialize<PrefabObject.ObjectEvents.PositionKeyframe>(positionArr[i].CreateReader());
+                prefabEvents.PositionKeyframes = new PrefabObject.ObjectEvents.KeyframeList<PrefabObject.ObjectEvents.PositionKeyframe>(positionKeyframes.ToList());
 
                 JArray scaleArr = obj.Value<JArray>("sca");
-                PrefabObject.Events.ScaleEvent[] scaleEvents = new PrefabObject.Events.ScaleEvent[scaleArr.Count];
+                PrefabObject.ObjectEvents.ScaleKeyframe[] scaleKeyframes = new PrefabObject.ObjectEvents.ScaleKeyframe[scaleArr.Count];
                 for (int i = 0; i < scaleArr.Count; i++)
-                    scaleEvents[i] = serializer.Deserialize<PrefabObject.Events.ScaleEvent>(scaleArr[i].CreateReader());
-                prefabEvents.ScaleEvents = scaleEvents.ToList();
+                    scaleKeyframes[i] = serializer.Deserialize<PrefabObject.ObjectEvents.ScaleKeyframe>(scaleArr[i].CreateReader());
+                prefabEvents.ScaleKeyframes = new PrefabObject.ObjectEvents.KeyframeList<PrefabObject.ObjectEvents.ScaleKeyframe>(scaleKeyframes.ToList());
 
                 JArray rotationArr = obj.Value<JArray>("rot");
-                PrefabObject.Events.RotationEvent[] rotationEvents = new PrefabObject.Events.RotationEvent[rotationArr.Count];
+                PrefabObject.ObjectEvents.RotationKeyframe[] rotationKeyframes = new PrefabObject.ObjectEvents.RotationKeyframe[rotationArr.Count];
                 for (int i = 0; i < rotationArr.Count; i++)
-                    rotationEvents[i] = serializer.Deserialize<PrefabObject.Events.RotationEvent>(rotationArr[i].CreateReader());
-                prefabEvents.RotationEvents = rotationEvents.ToList();
+                    rotationKeyframes[i] = serializer.Deserialize<PrefabObject.ObjectEvents.RotationKeyframe>(rotationArr[i].CreateReader());
+                prefabEvents.RotationKeyframes = new PrefabObject.ObjectEvents.KeyframeList<PrefabObject.ObjectEvents.RotationKeyframe>(rotationKeyframes.ToList());
 
                 JArray colorArr = obj.Value<JArray>("col");
-                PrefabObject.Events.ColorEvent[] colorEvents = new PrefabObject.Events.ColorEvent[colorArr.Count];
+                PrefabObject.ObjectEvents.ColorKeyframe[] colorKeyframes = new PrefabObject.ObjectEvents.ColorKeyframe[colorArr.Count];
                 for (int i = 0; i < colorArr.Count; i++)
-                    colorEvents[i] = serializer.Deserialize<PrefabObject.Events.ColorEvent>(colorArr[i].CreateReader());
-                prefabEvents.ColorEvents = colorEvents.ToList();
+                    colorKeyframes[i] = serializer.Deserialize<PrefabObject.ObjectEvents.ColorKeyframe>(colorArr[i].CreateReader());
+                prefabEvents.ColorKeyframes = new PrefabObject.ObjectEvents.KeyframeList<PrefabObject.ObjectEvents.ColorKeyframe>(colorKeyframes.ToList());
             }
 
             return prefabEvents;
@@ -376,96 +379,95 @@ namespace PAPrefabToolkit.Data
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            PrefabObject.Events prefabEvents = (PrefabObject.Events)value;
+            PrefabObject.ObjectEvents prefabEvents = (PrefabObject.ObjectEvents)value;
 
             //begin a block
             writer.WriteStartObject();
 
             writer.WritePropertyName("pos");
-            serializer.Serialize(writer, prefabEvents.PositionEvents);
+            serializer.Serialize(writer, prefabEvents.PositionKeyframes);
 
             writer.WritePropertyName("sca");
-            serializer.Serialize(writer, prefabEvents.ScaleEvents);
+            serializer.Serialize(writer, prefabEvents.ScaleKeyframes);
 
             writer.WritePropertyName("rot");
-            serializer.Serialize(writer, prefabEvents.RotationEvents);
+            serializer.Serialize(writer, prefabEvents.RotationKeyframes);
 
             writer.WritePropertyName("col");
-            serializer.Serialize(writer, prefabEvents.ColorEvents);
+            serializer.Serialize(writer, prefabEvents.ColorKeyframes);
 
             //end the block
             writer.WriteEndObject();
         }
     }
 
-    internal class PrefabPositionEventConverter : JsonConverter
+    internal class PrefabPositionKeyframeConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(PrefabObject.Events.PositionEvent);
+            return objectType == typeof(PrefabObject.ObjectEvents.PositionKeyframe);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            PrefabObject.Events.PositionEvent positionEvent = new PrefabObject.Events.PositionEvent();
+            PrefabObject.ObjectEvents.PositionKeyframe positionKeyframe = new PrefabObject.ObjectEvents.PositionKeyframe();
 
             JToken token = JToken.ReadFrom(reader);
             if (token.Type == JTokenType.Object)
             {
-                JObject obj = (JObject)token;
-                positionEvent.Time = token.Value<float>("t");
-                positionEvent.X = token.Value<float>("x");
-                positionEvent.Y = token.Value<float>("y");
+                positionKeyframe.Time = token.Value<float>("t");
+                positionKeyframe.Value.X = token.Value<float>("x");
+                positionKeyframe.Value.Y = token.Value<float>("y");
 
                 string str = token.Value<string>("ct");
                 if (!string.IsNullOrEmpty(str))
-                    positionEvent.CurveType = EaseStringConverter.StringToEase(str);
+                    positionKeyframe.Easing = EaseStringConverter.StringToEase(str);
 
                 int rnd = token.Value<int>("r");
                 if (rnd != 0)
                 {
-                    positionEvent.RandomMode = (PrefabObjectRandomMode)rnd;
-                    positionEvent.RandomX = token.Value<float>("rx");
-                    positionEvent.RandomY = token.Value<float>("ry");
-                    positionEvent.RandomInterval = token.Value<float>("rz");
+                    positionKeyframe.RandomMode = (PrefabObjectRandomMode)rnd;
+                    positionKeyframe.RandomValue.X = token.Value<float>("rx");
+                    positionKeyframe.RandomValue.Y = token.Value<float>("ry");
+                    positionKeyframe.RandomInterval = token.Value<float>("rz");
                 }
             }
 
-            return positionEvent;
+            return positionKeyframe;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            PrefabObject.Events.PositionEvent positionEvent = (PrefabObject.Events.PositionEvent)value;
+            PrefabObject.ObjectEvents.PositionKeyframe positionKeyframe = (PrefabObject.ObjectEvents.PositionKeyframe)value;
 
             //begin a block
             writer.WriteStartObject();
 
             writer.WritePropertyName("t");
-            writer.WriteValue(positionEvent.Time.ToString());
+            writer.WriteValue(positionKeyframe.Time.ToString());
 
             writer.WritePropertyName("x");
-            writer.WriteValue(positionEvent.X.ToString());
+            writer.WriteValue(positionKeyframe.Value.X.ToString());
 
             writer.WritePropertyName("y");
-            writer.WriteValue(positionEvent.Y.ToString());
+            writer.WriteValue(positionKeyframe.Value.Y.ToString());
 
             writer.WritePropertyName("ct");
-            writer.WriteValue(EaseStringConverter.EaseToString(positionEvent.CurveType));
+            writer.WriteValue(EaseStringConverter.EaseToString(positionKeyframe.Easing));
 
-            if (positionEvent.RandomMode != PrefabObjectRandomMode.None)
+            if (positionKeyframe.RandomMode != PrefabObjectRandomMode.None)
             {
                 writer.WritePropertyName("r");
-                writer.WriteValue(((int)positionEvent.RandomMode).ToString());
+                writer.WriteValue(((int)positionKeyframe.RandomMode).ToString());
 
                 writer.WritePropertyName("rx");
-                writer.WriteValue(positionEvent.RandomX.ToString());
+                writer.WriteValue(positionKeyframe.RandomValue.X.ToString());
 
                 writer.WritePropertyName("ry");
-                writer.WriteValue(positionEvent.RandomY.ToString());
+                writer.WriteValue(positionKeyframe.RandomValue.Y.ToString());
 
                 writer.WritePropertyName("rz");
-                writer.WriteValue(positionEvent.RandomInterval.ToString());
+                writer.WriteValue(positionKeyframe.RandomInterval.ToString());
             }
 
             //end the block
@@ -473,74 +475,73 @@ namespace PAPrefabToolkit.Data
         }
     }
 
-    internal class PrefabScaleEventConverter : JsonConverter
+    internal class PrefabScaleKeyframeConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(PrefabObject.Events.ScaleEvent);
+            return objectType == typeof(PrefabObject.ObjectEvents.ScaleKeyframe);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            PrefabObject.Events.ScaleEvent scaleEvent = new PrefabObject.Events.ScaleEvent();
+            PrefabObject.ObjectEvents.ScaleKeyframe scaleKeyframe = new PrefabObject.ObjectEvents.ScaleKeyframe();
 
             JToken token = JToken.ReadFrom(reader);
             if (token.Type == JTokenType.Object)
             {
-                JObject obj = (JObject)token;
-                scaleEvent.Time = token.Value<float>("t");
-                scaleEvent.X = token.Value<float>("x");
-                scaleEvent.Y = token.Value<float>("y");
+                scaleKeyframe.Time = token.Value<float>("t");
+                scaleKeyframe.Value.X = token.Value<float>("x");
+                scaleKeyframe.Value.Y = token.Value<float>("y");
 
                 string str = token.Value<string>("ct");
                 if (!string.IsNullOrEmpty(str))
-                    scaleEvent.CurveType = EaseStringConverter.StringToEase(str);
+                    scaleKeyframe.Easing = EaseStringConverter.StringToEase(str);
 
                 int rnd = token.Value<int>("r");
                 if (rnd != 0)
                 {
-                    scaleEvent.RandomMode = (PrefabObjectRandomMode)rnd;
-                    scaleEvent.RandomX = token.Value<float>("rx");
-                    scaleEvent.RandomY = token.Value<float>("ry");
-                    scaleEvent.RandomInterval = token.Value<float>("rz");
+                    scaleKeyframe.RandomMode = (PrefabObjectRandomMode)rnd;
+                    scaleKeyframe.RandomValue.X = token.Value<float>("rx");
+                    scaleKeyframe.RandomValue.Y = token.Value<float>("ry");
+                    scaleKeyframe.RandomInterval = token.Value<float>("rz");
                 }
             }
 
-            return scaleEvent;
+            return scaleKeyframe;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            PrefabObject.Events.ScaleEvent scaleEvent = (PrefabObject.Events.ScaleEvent)value;
+            PrefabObject.ObjectEvents.ScaleKeyframe scaleKeyframe = (PrefabObject.ObjectEvents.ScaleKeyframe)value;
 
             //begin a block
             writer.WriteStartObject();
 
             writer.WritePropertyName("t");
-            writer.WriteValue(scaleEvent.Time.ToString());
+            writer.WriteValue(scaleKeyframe.Time.ToString());
 
             writer.WritePropertyName("x");
-            writer.WriteValue(scaleEvent.X.ToString());
+            writer.WriteValue(scaleKeyframe.Value.X.ToString());
 
             writer.WritePropertyName("y");
-            writer.WriteValue(scaleEvent.Y.ToString());
+            writer.WriteValue(scaleKeyframe.Value.Y.ToString());
 
             writer.WritePropertyName("ct");
-            writer.WriteValue(EaseStringConverter.EaseToString(scaleEvent.CurveType));
+            writer.WriteValue(EaseStringConverter.EaseToString(scaleKeyframe.Easing));
 
-            if (scaleEvent.RandomMode != PrefabObjectRandomMode.None)
+            if (scaleKeyframe.RandomMode != PrefabObjectRandomMode.None)
             {
                 writer.WritePropertyName("r");
-                writer.WriteValue(((int)scaleEvent.RandomMode).ToString());
+                writer.WriteValue(((int)scaleKeyframe.RandomMode).ToString());
 
                 writer.WritePropertyName("rx");
-                writer.WriteValue(scaleEvent.RandomX.ToString());
+                writer.WriteValue(scaleKeyframe.RandomValue.X.ToString());
 
                 writer.WritePropertyName("ry");
-                writer.WriteValue(scaleEvent.RandomY.ToString());
+                writer.WriteValue(scaleKeyframe.RandomValue.Y.ToString());
 
                 writer.WritePropertyName("rz");
-                writer.WriteValue(scaleEvent.RandomInterval.ToString());
+                writer.WriteValue(scaleKeyframe.RandomInterval.ToString());
             }
 
             //end the block
@@ -548,66 +549,65 @@ namespace PAPrefabToolkit.Data
         }
     }
 
-    internal class PrefabRotationEventConverter : JsonConverter
+    internal class PrefabRotationKeyframeConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(PrefabObject.Events.RotationEvent);
+            return objectType == typeof(PrefabObject.ObjectEvents.RotationKeyframe);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            PrefabObject.Events.RotationEvent rotationEvent = new PrefabObject.Events.RotationEvent();
+            PrefabObject.ObjectEvents.RotationKeyframe rotationKeyframe = new PrefabObject.ObjectEvents.RotationKeyframe();
 
             JToken token = JToken.ReadFrom(reader);
             if (token.Type == JTokenType.Object)
             {
-                JObject obj = (JObject)token;
-                rotationEvent.Time = token.Value<float>("t");
-                rotationEvent.X = token.Value<float>("x");
+                rotationKeyframe.Time = token.Value<float>("t");
+                rotationKeyframe.Value = token.Value<float>("x");
 
                 string str = token.Value<string>("ct");
                 if (!string.IsNullOrEmpty(str))
-                    rotationEvent.CurveType = EaseStringConverter.StringToEase(str);
+                    rotationKeyframe.Easing = EaseStringConverter.StringToEase(str);
 
                 int rnd = token.Value<int>("r");
                 if (rnd != 0)
                 {
-                    rotationEvent.RandomMode = (PrefabObjectRandomMode)rnd;
-                    rotationEvent.RandomX = token.Value<float>("rx");
-                    rotationEvent.RandomInterval = token.Value<float>("rz");
+                    rotationKeyframe.RandomMode = (PrefabObjectRandomMode)rnd;
+                    rotationKeyframe.RandomValue = token.Value<float>("rx");
+                    rotationKeyframe.RandomInterval = token.Value<float>("rz");
                 }
             }
 
-            return rotationEvent;
+            return rotationKeyframe;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            PrefabObject.Events.RotationEvent rotationEvent = (PrefabObject.Events.RotationEvent)value;
+            PrefabObject.ObjectEvents.RotationKeyframe rotationKeyframe = (PrefabObject.ObjectEvents.RotationKeyframe)value;
 
             //begin a block
             writer.WriteStartObject();
 
             writer.WritePropertyName("t");
-            writer.WriteValue(rotationEvent.Time.ToString());
+            writer.WriteValue(rotationKeyframe.Time.ToString());
 
             writer.WritePropertyName("x");
-            writer.WriteValue(rotationEvent.X.ToString());
+            writer.WriteValue(rotationKeyframe.Value.ToString());
 
             writer.WritePropertyName("ct");
-            writer.WriteValue(EaseStringConverter.EaseToString(rotationEvent.CurveType));
+            writer.WriteValue(EaseStringConverter.EaseToString(rotationKeyframe.Easing));
 
-            if (rotationEvent.RandomMode != PrefabObjectRandomMode.None)
+            if (rotationKeyframe.RandomMode != PrefabObjectRandomMode.None)
             {
                 writer.WritePropertyName("r");
-                writer.WriteValue(((int)rotationEvent.RandomMode).ToString());
+                writer.WriteValue(((int)rotationKeyframe.RandomMode).ToString());
 
                 writer.WritePropertyName("rx");
-                writer.WriteValue(rotationEvent.RandomX.ToString());
+                writer.WriteValue(rotationKeyframe.RandomValue.ToString());
 
                 writer.WritePropertyName("rz");
-                writer.WriteValue(rotationEvent.RandomInterval.ToString());
+                writer.WriteValue(rotationKeyframe.RandomInterval.ToString());
             }
 
             //end the block
@@ -615,63 +615,46 @@ namespace PAPrefabToolkit.Data
         }
     }
 
-    internal class PrefabColorEventConverter : JsonConverter
+    internal class PrefabColorKeyframeConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(PrefabObject.Events.ColorEvent);
+            return objectType == typeof(PrefabObject.ObjectEvents.ColorKeyframe);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            PrefabObject.Events.ColorEvent colorEvent = new PrefabObject.Events.ColorEvent();
+            PrefabObject.ObjectEvents.ColorKeyframe colorKeyframe = new PrefabObject.ObjectEvents.ColorKeyframe();
 
             JToken token = JToken.ReadFrom(reader);
             if (token.Type == JTokenType.Object)
             {
-                JObject obj = (JObject)token;
-                colorEvent.Time = token.Value<float>("t");
-                colorEvent.X = token.Value<float>("x");
+                colorKeyframe.Time = token.Value<float>("t");
+                colorKeyframe.Value = token.Value<int>("x");
 
                 string str = token.Value<string>("ct");
                 if (!string.IsNullOrEmpty(str))
-                    colorEvent.CurveType = EaseStringConverter.StringToEase(str);
-
-                int rnd = token.Value<int>("r");
-                if (rnd != 0)
-                {
-                    colorEvent.RandomMode = (PrefabObjectRandomMode)rnd;
-                    colorEvent.RandomX = token.Value<float>("rx");
-                }
+                    colorKeyframe.Easing = EaseStringConverter.StringToEase(str);
             }
 
-            return colorEvent;
+            return colorKeyframe;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            PrefabObject.Events.ColorEvent colorEvent = (PrefabObject.Events.ColorEvent)value;
+            PrefabObject.ObjectEvents.ColorKeyframe colorKeyframe = (PrefabObject.ObjectEvents.ColorKeyframe)value;
 
             //begin a block
             writer.WriteStartObject();
 
             writer.WritePropertyName("t");
-            writer.WriteValue(colorEvent.Time.ToString());
+            writer.WriteValue(colorKeyframe.Time.ToString());
 
             writer.WritePropertyName("x");
-            writer.WriteValue(colorEvent.X.ToString());
+            writer.WriteValue(colorKeyframe.Value.ToString());
 
             writer.WritePropertyName("ct");
-            writer.WriteValue(EaseStringConverter.EaseToString(colorEvent.CurveType));
-
-            if (colorEvent.RandomMode != PrefabObjectRandomMode.None)
-            {
-                writer.WritePropertyName("r");
-                writer.WriteValue(((int)colorEvent.RandomMode).ToString());
-
-                writer.WritePropertyName("rx");
-                writer.WriteValue(colorEvent.RandomX.ToString());
-            }
+            writer.WriteValue(EaseStringConverter.EaseToString(colorKeyframe.Easing));
 
             //end the block
             writer.WriteEndObject();
