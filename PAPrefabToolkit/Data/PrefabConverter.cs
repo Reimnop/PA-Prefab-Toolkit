@@ -385,16 +385,16 @@ namespace PAPrefabToolkit.Data
             writer.WriteStartObject();
 
             writer.WritePropertyName("pos");
-            serializer.Serialize(writer, prefabEvents.PositionKeyframes);
+            serializer.Serialize(writer, prefabEvents.PositionKeyframes.GetInternalList());
 
             writer.WritePropertyName("sca");
-            serializer.Serialize(writer, prefabEvents.ScaleKeyframes);
+            serializer.Serialize(writer, prefabEvents.ScaleKeyframes.GetInternalList());
 
             writer.WritePropertyName("rot");
-            serializer.Serialize(writer, prefabEvents.RotationKeyframes);
+            serializer.Serialize(writer, prefabEvents.RotationKeyframes.GetInternalList());
 
             writer.WritePropertyName("col");
-            serializer.Serialize(writer, prefabEvents.ColorKeyframes);
+            serializer.Serialize(writer, prefabEvents.ColorKeyframes.GetInternalList());
 
             //end the block
             writer.WriteEndObject();
