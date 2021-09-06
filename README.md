@@ -38,45 +38,45 @@ myObject.PositionParenting = true;
 myObject.ScaleParenting = false;
 myObject.RotationParenting = true;
 ```
-Similarly for parent offset:
+Similarly for parent offset
 ```csharp
 myObject.PositionParentOffset = true;
 myObject.ScaleParentOffset = false;
 myObject.RotationParentOffset = true;
 ```
-Changing render depth:
+Changing render depth
 ```csharp
 myObject.RenderDepth = 5;
 ```
-Changing object type:
+Changing object type
 ```csharp
 myObject.ObjectType = PrefabObjectType.Helper;
 ```
-Changing object shape:
+Changing object shape
 ```csharp
 myObject.Shape = PrefabObjectShape.Circle;
 ```
-Changing object sub-shape:
+Changing object sub-shape
 ```csharp
 myObject.ShapeOption = (int)PrefabCircleOption.HalfHollow;
 ```
-Changing object text:
+Changing object text
 ```csharp
 myObject.Text = "The quick brown fox jumps over the lazy dog."; // Note: This will be ignored unless your object shape is Text.
 ```
-Changing object auto kill type:
+Changing object auto kill type
 ```csharp
 myObject.AutoKillType = PrefabObjectAutoKillType.Fixed;
 ```
-Changing object auto kill offset:
+Changing object auto kill offset
 ```csharp
 myObject.AutoKillOffset = 5.0f;
 ```
-Changing object origin:
+Changing object origin
 ```csharp
 myObject.Origin = new Vector2(0.5f, 0.5f);
 ```
-Changing editor locked/collapsed state and/or bin/layer:
+Changing editor locked/collapsed state and/or bin/layer
 ```csharp
 myObject.EditorLocked = false;
 myObject.EditorCollapse = true;
