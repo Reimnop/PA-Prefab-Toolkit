@@ -95,15 +95,159 @@ namespace PAPrefabToolkit
         public List<RotationKeyframe> RotationKeyframes = new List<RotationKeyframe>();
         public List<ColorKeyframe> ColorKeyframes = new List<ColorKeyframe>();
 
-        internal Prefab Prefab { get; }
+        internal Prefab Prefab;
 
-        private string parentId = string.Empty;
-        private HashSet<string> childrenIds = new HashSet<string>();
+        internal string ParentID = string.Empty;
+        internal HashSet<string> ChildrenIDs = new HashSet<string>();
 
         internal PrefabObject(string name, string id, Prefab prefab)
         {
             Name = name;
             ID = id;
+            Prefab = prefab;
+        }
+
+        internal PrefabObject(JSONNode json, Prefab prefab)
+        {
+            Name = json["name"];
+            ID = json["id"];
+            ParentID = json["p"];
+
+            if (json.HasKey("pt"))
+            {
+                string pt = json["pt"];
+                PositionParenting = pt[0] == '1';
+                ScaleParenting = pt[1] == '1';
+                RotationParenting = pt[2] == '1';
+            }
+            else
+            {
+                PositionParenting = true;
+                ScaleParenting = false;
+                RotationParenting = true;
+            }
+
+            if (json.HasKey("po"))
+            {
+                JSONNode po = json["po"];
+                PositionParentOffset = po[0].AsFloat;
+                ScaleParentOffset = po[1].AsFloat;
+                RotationParentOffset = po[2].AsFloat; 
+            }
+
+            RenderDepth = json["d"].AsInt;
+            ObjectType = (PrefabObjectType)json["ot"].AsInt;
+            Shape = (PrefabObjectShape)json["shape"].AsInt;
+            ShapeOption = json["so"].AsInt;
+
+            if (Shape == PrefabObjectShape.Text)
+            {
+                Text = json["text"];
+            }
+
+            StartTime = json["st"].AsFloat;
+            AutoKillType = (PrefabObjectAutoKillType)json["akt"].AsInt;
+            AutoKillOffset = json["ako"].AsFloat;
+
+            if (json.HasKey("o"))
+            {
+                JSONNode o = json["o"];
+                Origin.X = o["x"].AsFloat;
+                Origin.Y = o["y"].AsFloat;
+            }
+
+            if (json.HasKey("ed"))
+            {
+                JSONNode ed = json["ed"];
+                if (ed.HasKey("locked"))
+                {
+                    EditorLocked = json["locked"].AsBool;
+                }
+
+                if (ed.HasKey("shrink"))
+                {
+                    EditorCollapse = json["shrink"].AsBool;
+                }
+
+                EditorBin = json["bin"].AsInt;
+                EditorLayer = json["layer"].AsInt;
+            }
+
+            JSONNode events = json["events"];
+
+            JSONNode pos = events["pos"];
+            foreach (JSONNode kfJson in pos)
+            {
+                PositionKeyframe kf = new PositionKeyframe()
+                {
+                    Time = kfJson["t"].AsFloat,
+                    Value = new Vector2(kfJson["x"].AsFloat, kfJson["y"].AsFloat),
+                    Easing = kfJson.HasKey("ct") ? (PrefabObjectEasing)Enum.Parse(typeof(PrefabObjectEasing), kfJson["ct"]) : PrefabObjectEasing.Linear
+                };
+
+                if (kfJson.HasKey("r"))
+                {
+                    kf.RandomMode = (PrefabObjectRandomMode)kfJson["r"].AsInt;
+                    kf.RandomValue = new Vector2(kfJson["rx"].AsFloat, kfJson["ry"].AsFloat);
+                    kf.RandomInterval = kfJson["rz"].AsFloat;
+                }
+
+                PositionKeyframes.Add(kf);
+            }
+
+            JSONNode sca = events["sca"];
+            foreach (JSONNode kfJson in sca)
+            {
+                ScaleKeyframe kf = new ScaleKeyframe()
+                {
+                    Time = kfJson["t"].AsFloat,
+                    Value = new Vector2(kfJson["x"].AsFloat, kfJson["y"].AsFloat),
+                    Easing = kfJson.HasKey("ct") ? (PrefabObjectEasing)Enum.Parse(typeof(PrefabObjectEasing), kfJson["ct"]) : PrefabObjectEasing.Linear
+                };
+
+                if (kfJson.HasKey("r"))
+                {
+                    kf.RandomMode = (PrefabObjectRandomMode)kfJson["r"].AsInt;
+                    kf.RandomValue = new Vector2(kfJson["rx"].AsFloat, kfJson["ry"].AsFloat);
+                    kf.RandomInterval = kfJson["rz"].AsFloat;
+                }
+
+                ScaleKeyframes.Add(kf);
+            }
+
+            JSONNode rot = events["rot"];
+            foreach (JSONNode kfJson in rot)
+            {
+                RotationKeyframe kf = new RotationKeyframe()
+                {
+                    Time = kfJson["t"].AsFloat,
+                    Value = kfJson["x"].AsFloat,
+                    Easing = kfJson.HasKey("ct") ? (PrefabObjectEasing)Enum.Parse(typeof(PrefabObjectEasing), kfJson["ct"]) : PrefabObjectEasing.Linear
+                };
+
+                if (kfJson.HasKey("r"))
+                {
+                    kf.RandomMode = (PrefabObjectRandomMode)kfJson["r"].AsInt;
+                    kf.RandomValue = kfJson["rx"].AsFloat;
+                    kf.RandomInterval = kfJson["rz"].AsFloat;
+                }
+
+                RotationKeyframes.Add(kf);
+            }
+
+            JSONNode col = events["col"];
+            foreach (JSONNode kfJson in col)
+            {
+                ColorKeyframe kf = new ColorKeyframe()
+                {
+                    Time = kfJson["t"].AsFloat,
+                    Value = kfJson["x"].AsInt,
+                    Easing = kfJson.HasKey("ct") ? (PrefabObjectEasing)Enum.Parse(typeof(PrefabObjectEasing), kfJson["ct"]) : PrefabObjectEasing.Linear
+                };
+
+                ColorKeyframes.Add(kf);
+            }
+
             Prefab = prefab;
         }
 
@@ -113,7 +257,7 @@ namespace PAPrefabToolkit
         /// <returns>The object's parent instance or null if there is no parent.</returns>
         public PrefabObject GetParent()
         {
-            return string.IsNullOrEmpty(parentId) ? null : Prefab.PrefabObjects[parentId];
+            return string.IsNullOrEmpty(ParentID) ? null : Prefab.PrefabObjects[ParentID];
         }
 
         /// <summary>
@@ -131,17 +275,17 @@ namespace PAPrefabToolkit
 
             if (oldParent != null)
             {
-                oldParent.childrenIds.Remove(ID);
+                oldParent.ChildrenIDs.Remove(ID);
             }
 
             if (parent != null)
             {
-                parent.childrenIds.Add(ID);
-                parentId = parent.ID;
+                parent.ChildrenIDs.Add(ID);
+                ParentID = parent.ID;
             }
             else
             {
-                parentId = string.Empty;
+                ParentID = string.Empty;
             }
         }
 
@@ -151,7 +295,7 @@ namespace PAPrefabToolkit
         /// <returns>The children count.</returns>
         public int GetChildrenCount()
         {
-            return childrenIds.Count;
+            return ChildrenIDs.Count;
         }
 
         /// <summary>
@@ -161,7 +305,7 @@ namespace PAPrefabToolkit
         public List<PrefabObject> GetChildrenList()
         {
             List<PrefabObject> children = new List<PrefabObject>(GetChildrenCount());
-            foreach (string childId in childrenIds)
+            foreach (string childId in ChildrenIDs)
             {
                 children.Add(Prefab.PrefabObjects[childId]);
             }
@@ -193,7 +337,7 @@ namespace PAPrefabToolkit
             JSONObject json = new JSONObject();
             json["name"] = Name;
             json["id"] = ID;
-            json["p"] = parentId;
+            json["p"] = ParentID;
             json["pt"] = (PositionParenting ? "1" : "0") + (ScaleParenting ? "1" : "0") + (RotationParenting ? "1" : "0");
             json["po"][0] = PositionParentOffset.ToString();
             json["po"][1] = ScaleParentOffset.ToString();

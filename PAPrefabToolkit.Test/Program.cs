@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Numerics;
+using SimpleJSON;
 
 namespace PAPrefabToolkit.Test
 {
@@ -7,6 +9,8 @@ namespace PAPrefabToolkit.Test
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Prefab creation test");
+
             // Create a new prefab
             Prefab prefab = new Prefab("Procedural Bomb", PrefabType.Bombs);
 
@@ -42,6 +46,11 @@ namespace PAPrefabToolkit.Test
 
             // Export to file
             prefab.ExportToFile("procedural_bomb.lsp", PrefabBuildFlags.AbsoluteRotation);
+
+            Console.WriteLine("Prefab reading test");
+
+            Prefab readPrefab = new Prefab(JSON.Parse(File.ReadAllText("procedural_bomb.lsp")));
+            Console.WriteLine(readPrefab.ToJson().ToString());
         }
     }
 }

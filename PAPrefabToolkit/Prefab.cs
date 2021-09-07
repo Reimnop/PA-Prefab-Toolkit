@@ -1,5 +1,6 @@
 ﻿using SimpleJSON;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -8,7 +9,7 @@ namespace PAPrefabToolkit
     /// <summary>
     /// The prefab, the base of the library. Use this to make a prefab and export to a file or to a stream.
     /// </summary>
-    public class Prefab
+    public class Prefab : IEnumerable<PrefabObject>
     {
         private static Random random;
 
@@ -68,6 +69,32 @@ namespace PAPrefabToolkit
         }
 
         /// <summary>
+        /// Construct a prefab with a json object.
+        /// </summary>
+        /// <param name="json"></param>
+        public Prefab(JSONNode json)
+        {
+            Name = json["name"];
+            Type = (PrefabType)json["type"].AsInt;
+            Offset = json["offset"].AsFloat;
+
+            JSONNode objectsArray = json["objects"];
+            foreach (JSONNode objectJson in objectsArray)
+            {
+                PrefabObjects.Add(objectJson["id"], new PrefabObject(objectJson, this));
+            }
+
+            foreach (PrefabObject obj in PrefabObjects.Values)
+            {
+                PrefabObject parent = obj.GetParent();
+                if (parent != null)
+                {
+                    parent.ChildrenIDs.Add(obj.ID);
+                }
+            }
+        }
+
+        /// <summary>
         /// Create an object and stores it the prefab.
         /// </summary>
         /// <returns>A new prefab object</returns>
@@ -82,10 +109,29 @@ namespace PAPrefabToolkit
         }
 
         /// <summary>
+        /// Unparents all object's children and deletes the object.
+        /// </summary>
+        /// <param name="prefabObject">An existing object</param>
+        public void DeleteObject(PrefabObject prefabObject)
+        {
+            if (prefabObject.Prefab != this)
+            {
+                throw new ArgumentException("prefabObject does not belong to this prefab");
+            }
+
+            foreach (PrefabObject obj in prefabObject.GetChildrenList())
+            {
+                obj.SetParent(null);
+            }
+
+            PrefabObjects.Remove(prefabObject.ID);
+        }
+
+        /// <summary>
         /// Writes the prefab to a file.
         /// </summary>
-        /// <param name="path">A file path.</param>
-        /// <param name="flags">Configuration flags to configure the output of the prefab builder.</param>
+        /// <param name="path">A file path</param>
+        /// <param name="flags">Build flags</param>
         public void ExportToFile(string path, PrefabBuildFlags flags = PrefabBuildFlags.None)
         {
             File.WriteAllText(path, ToJson(flags).ToString());
@@ -95,7 +141,7 @@ namespace PAPrefabToolkit
         /// Gets a JSON object of the prefab.
         /// </summary>
         /// <param name="flags">Configuration flags to configure the output of the prefab builder.</param>
-        /// <returns>A JSONNode object.</returns>
+        /// <returns>A JSONNode object</returns>
         public JSONNode ToJson(PrefabBuildFlags flags = PrefabBuildFlags.None)
         {
             JSONObject json = new JSONObject();
@@ -117,6 +163,16 @@ namespace PAPrefabToolkit
             }
 
             return json;
+        }
+
+        public IEnumerator<PrefabObject> GetEnumerator()
+        {
+            return PrefabObjects.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
